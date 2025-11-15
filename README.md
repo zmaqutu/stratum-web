@@ -32,6 +32,6 @@ Both variables are public build-time settings. `VITE_PROCESSING_API_URL` is rese
 
 The workspace supports a single tile selection or a single axis-aligned geographic rectangle. Area selection uses ordered west/east bounds within one world and does not represent antimeridian-crossing rectangles. Hillshade, Slope and processing submission are planned. See the [architecture and proposed API](docs/architecture.md) and [roadmap](docs/roadmap.md).
 
-The project uses a provisional [MIT license](LICENSE). The OpenStreetMap basemap, elevation data and dependencies retain their own licenses and attribution requirements.
+Stratum Web is open source under the [MIT License](LICENSE). The OpenStreetMap basemap, elevation data and dependencies retain their own licenses and attribution requirements.
 
-The initial commit uses a reconstructed 15 November 2025 baseline timestamp for both author and committer. The scaffold was created later. Subsequent work uses its actual dates.
+The scaffolding and licensing commits use reconstructed author and committer timestamps of 10:00 and 10:03 SAST on 15 November 2025. The work took place later. Subsequent commits use their actual dates.
