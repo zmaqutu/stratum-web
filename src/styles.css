@@ -1,0 +1,154 @@
+:root {
+  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color: #e8efeb;
+  background: #192521;
+  color-scheme: dark;
+  font-synthesis: none;
+  --panel: #192521;
+  --raised: #222f2a;
+  --line: #35443d;
+  --muted: #a6b8af;
+  --accent: #a6ddc2;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; color: var(--muted); }
+button:focus-visible, input:focus-visible, .leaflet-container:focus-visible {
+  outline: 2px solid #6cae93;
+  outline-offset: 2px;
+}
+
+.workspace {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100dvh;
+}
+
+.topbar {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 8px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 680;
+  letter-spacing: -0.025em;
+}
+
+.mode-buttons { display: flex; gap: 3px; }
+.topbar button, .process-button {
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  padding: 6px 9px;
+  font-size: 13px;
+}
+
+.topbar button:hover:enabled { background: var(--raised); }
+.topbar button[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--raised);
+  border-color: #547569;
+}
+
+.clear-button { margin-left: auto; white-space: nowrap; }
+
+.workspace-main {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: 0;
+}
+
+.sidebar {
+  background: var(--panel);
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.sidebar section { padding: 16px; border-bottom: 1px solid var(--line); }
+.sidebar h2 { font-size: 13px; margin: 0 0 12px; font-weight: 670; }
+.layers { margin: 0; padding: 0; list-style: none; }
+.layers li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 34px;
+  gap: 6px;
+}
+.layers label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.layers label:has(:disabled) { cursor: default; }
+.layers input { accent-color: #86c5a9; margin: 0; width: 15px; height: 15px; }
+.planned-layer { padding-left: 23px; }
+.planned-layer, .layer-status, .hint, .readout dt { color: var(--muted); }
+.layer-status { font-size: 11px; }
+.hint { margin: 0; font-size: 12px; line-height: 1.5; }
+.readout {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 7px 10px;
+  margin: 0;
+  line-height: 1.35;
+}
+.readout dd { margin: 0; font: 12px/1.4 var(--mono); text-align: right; }
+.readout + .hint { margin-top: 10px; }
+.tile-id { padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--line); }
+.process-button {
+  width: 100%;
+  padding: 8px;
+  margin: 14px 0 8px;
+  border-color: var(--line);
+  background: var(--raised);
+}
+
+.map-region, .leaflet-container { width: 100%; height: 100%; min-height: 0; }
+.leaflet-container { color-scheme: light; background: #c0d4d5; }
+.mode-tile .leaflet-container, .mode-area .leaflet-container { cursor: crosshair; }
+.leaflet-container:focus-visible { outline-offset: -3px; }
+.leaflet-container .leaflet-control-zoom {
+  border: 1px solid #899891;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.leaflet-container .leaflet-control-zoom a { color: #243930; }
+.leaflet-container .leaflet-control-attribution { color: #23362f; }
+
+.statusbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  padding: 6px 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  min-height: 31px;
+}
+.status-value {
+  color: #e8efeb;
+  display: inline-block;
+  font-family: var(--mono);
+  margin-left: 3px;
+}
+.statusbar > span:nth-child(-n+2) .status-value { min-width: 8ch; }
+.projection { margin-left: auto; }
+
+@media (max-width: 650px) {
+  .workspace { height: auto; min-height: 100dvh; grid-template-rows: auto 1fr auto; }
+  .workspace-main { grid-template-columns: 1fr; grid-template-rows: 58dvh auto; }
+  .map-region { grid-row: 1; }
+  .sidebar { border-right: 0; border-top: 1px solid var(--line); }
+  .topbar { flex-wrap: wrap; gap: 5px 12px; padding-inline: 10px; }
+  .mode-buttons { order: 1; width: 100%; }
+  .projection { margin-left: 0; }
+}
