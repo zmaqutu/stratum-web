@@ -28,7 +28,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, .leaflet-contai
   height: 100dvh;
 }
 
-.topbar {
+.map-toolbar {
   min-height: 52px;
   display: flex;
   align-items: center;
@@ -38,7 +38,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, .leaflet-contai
   border-bottom: 1px solid var(--line);
 }
 
-.topbar h1 {
+.map-toolbar h1 {
   margin: 0;
   font-size: 17px;
   font-weight: 680;
@@ -46,7 +46,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, .leaflet-contai
 }
 
 .mode-buttons { display: flex; gap: 3px; }
-.topbar button, .process-button {
+.map-toolbar button, .process-button {
   border: 1px solid transparent;
   border-radius: 3px;
   background: transparent;
@@ -54,8 +54,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, .leaflet-contai
   font-size: 13px;
 }
 
-.topbar button:hover:enabled { background: var(--raised); }
-.topbar button[aria-pressed="true"] {
+.map-toolbar button:hover:enabled { background: var(--raised); }
+.map-toolbar button[aria-pressed="true"] {
   color: var(--accent);
   background: var(--raised);
   border-color: #547569;
@@ -162,7 +162,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, .leaflet-contai
   .workspace-main { grid-template-columns: 1fr; grid-template-rows: 58dvh auto; }
   .map-region { grid-row: 1; }
   .sidebar { border-right: 0; border-top: 1px solid var(--line); }
-  .topbar { flex-wrap: wrap; gap: 5px 12px; padding-inline: 10px; }
+  .map-toolbar { flex-wrap: wrap; gap: 5px 12px; padding-inline: 10px; }
   .mode-buttons { order: 1; width: 100%; }
   .projection { margin-left: 0; }
 }

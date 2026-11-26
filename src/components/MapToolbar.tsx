@@ -7,7 +7,7 @@ export function MapToolbar() {
   const canClear = useMapStore((state) => state.selection !== null);
   const clearSelection = useMapStore((state) => state.clearSelection);
   return (
-    <header className="topbar">
+    <header className="map-toolbar">
       <h1>Stratum</h1>
       <div className="mode-buttons" role="group" aria-label="Map mode">
         {selectionModes.map(({ value, label }) => (
