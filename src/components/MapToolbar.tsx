@@ -1,15 +1,11 @@
-import type { Position } from "../geo/coordinates";
 import { selectionModes } from "../selection";
-import type { Mode } from "../selection";
+import { useMapStore } from "../state/mapStore";
 
-interface ToolbarProps {
-  mode: Mode;
-  onMode: (mode: Mode) => void;
-  canClear: boolean;
-  onClear: () => void;
-}
-
-export function MapToolbar({ mode, onMode, canClear, onClear }: ToolbarProps) {
+export function MapToolbar() {
+  const mode = useMapStore((state) => state.mode);
+  const setMode = useMapStore((state) => state.setMode);
+  const canClear = useMapStore((state) => state.selection !== null);
+  const clearSelection = useMapStore((state) => state.clearSelection);
   return (
     <header className="topbar">
       <h1>Stratum</h1>
@@ -19,20 +15,23 @@ export function MapToolbar({ mode, onMode, canClear, onClear }: ToolbarProps) {
             key={value}
             type="button"
             aria-pressed={mode === value}
-            onClick={() => onMode(value)}
+            onClick={() => setMode(value)}
           >
             {label}
           </button>
         ))}
       </div>
-      <button className="clear-button" type="button" disabled={!canClear} onClick={onClear}>
+      <button className="clear-button" type="button" disabled={!canClear} onClick={clearSelection}>
         Clear selection
       </button>
     </header>
   );
 }
 
-export function StatusBar({ cursor, zoom, mode }: { cursor: Position | null; zoom: number; mode: Mode }) {
+export function StatusBar() {
+  const cursor = useMapStore((state) => state.cursor);
+  const zoom = useMapStore((state) => state.zoom);
+  const mode = useMapStore((state) => state.mode);
   const modeLabel = selectionModes.find(({ value }) => value === mode)?.label;
   return (
     <footer className="statusbar" aria-label="Map status">

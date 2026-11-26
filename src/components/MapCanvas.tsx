@@ -1,69 +1,77 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import type { LatLngBoundsExpression } from "leaflet";
 import {
-  CircleMarker, MapContainer, Rectangle, ScaleControl, TileLayer, useMapEvents, ZoomControl,
+  MapContainer, Rectangle, ScaleControl, TileLayer, useMapEvents, ZoomControl,
 } from "react-leaflet";
-import { clampLatitude, MAX_MERCATOR_LATITUDE } from "../geo/coordinates";
-import type { Position } from "../geo/coordinates";
-import type { Mode, Selection } from "../selection";
+import { basemaps, imageryPlaceLabels } from "../basemap";
+import { clampPositionToWorld, MAX_MERCATOR_LATITUDE } from "../geo/coordinates";
+import { elevationBase, INITIAL_ZOOM } from "../mapConfig";
+import { useMapStore } from "../state/mapStore";
+import { AreaSelection } from "./AreaSelection";
 
 const CAPE_TOWN: [number, number] = [-34.02, 18.46];
 const WORLD: LatLngBoundsExpression = [
   [-MAX_MERCATOR_LATITUDE, -180],
   [MAX_MERCATOR_LATITUDE, 180],
 ];
-export const INITIAL_ZOOM = 11;
-
-interface MapProps {
-  mode: Mode;
-  selection: Selection | null;
-  baseVisible: boolean;
-  elevationUrl?: string;
-  onSelect: (position: Position, zoom: number) => void;
-  onCursor: (position: Position | null) => void;
-  onZoom: (zoom: number) => void;
-}
-
-function mapPosition(point: Position): Position {
-  return { lat: clampLatitude(point.lat), lng: Math.max(-180, Math.min(180, point.lng)) };
-}
-
-function Interaction({
-  mode, onSelect, onCursor, onZoom,
-}: Pick<MapProps, "mode" | "onSelect" | "onCursor" | "onZoom">) {
+function Interaction() {
+  const mode = useMapStore((state) => state.mode);
+  const inspectTile = useMapStore((state) => state.inspectTile);
+  const setCursor = useMapStore((state) => state.setCursor);
+  const setZoom = useMapStore((state) => state.setZoom);
   const map = useMapEvents({
-    click: (event) => onSelect(mapPosition(event.latlng), map.getZoom()),
-    mousemove: (event) => onCursor(mapPosition(event.latlng)),
-    mouseout: () => onCursor(null),
-    zoomend: () => onZoom(map.getZoom()),
+    click: (event) => {
+      if (mode === "tile") inspectTile(clampPositionToWorld(event.latlng), map.getZoom());
+    },
+    mousemove: (event) => setCursor(clampPositionToWorld(event.latlng)),
+    mouseout: () => setCursor(null),
+    zoomend: () => setZoom(map.getZoom()),
   });
 
   useEffect(() => {
     const container = map.getContainer();
-    container.setAttribute("aria-label", "Interactive map. Arrow keys pan. Enter selects the map centre in selection modes.");
+    setZoom(map.getZoom());
     const observer = new ResizeObserver(() => map.invalidateSize({ pan: false }));
     observer.observe(container);
     return () => observer.disconnect();
-  }, [map]);
+  }, [map, setZoom]);
 
   useEffect(() => {
+    const container = map.getContainer();
+    const description = {
+      pan: "Interactive map. Use the arrow keys to pan.",
+      tile: "Interactive map. Press Enter to inspect the tile at the map centre.",
+      area: "Interactive map. Drag to draw a rectangle, or press Enter, pan with the arrow keys, then press Enter again. Escape cancels drawing.",
+    };
+    container.setAttribute("aria-label", description[mode]);
+
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Enter" && mode !== "pan" && event.target === map.getContainer()) {
-        onSelect(mapPosition(map.getCenter()), map.getZoom());
+      if (event.key === "Enter" && mode === "tile" && !event.repeat && event.target === container) {
+        inspectTile(clampPositionToWorld(map.getCenter()), map.getZoom());
       }
     }
-    const container = map.getContainer();
     container.addEventListener("keydown", onKeyDown);
     return () => container.removeEventListener("keydown", onKeyDown);
-  }, [map, mode, onSelect]);
+  }, [map, mode, inspectTile]);
 
   return null;
 }
 
-export function MapCanvas({
-  mode, selection, baseVisible, elevationUrl, onSelect, onCursor, onZoom,
-}: MapProps) {
-  const bounds = selection && "bounds" in selection ? selection.bounds : null;
+export function MapCanvas() {
+  const mode = useMapStore((state) => state.mode);
+  const bounds = useMapStore((state) => state.selection?.bounds);
+  const baseVisible = useMapStore((state) => state.baseVisible);
+  const basemapId = useMapStore((state) => state.basemapId);
+  const showPlaceLabels = useMapStore((state) => state.baseVisible && state.basemapId === "imagery" && state.placeLabels);
+  const elevationVisible = useMapStore((state) => state.elevationVisible);
+  const setBasemapError = useMapStore((state) => state.setBasemapError);
+  const selectArea = useMapStore((state) => state.selectArea);
+  const basemap = basemaps[basemapId];
+  const selectionColor = baseVisible && basemapId === "imagery" ? "#a6ddc2" : "#2a735e";
+  const basemapEvents = useMemo(() => ({
+    loading: () => setBasemapError(false),
+    tileerror: () => setBasemapError(true),
+  }), [setBasemapError]);
   return (
     <section className={`map-region mode-${mode}`} aria-label="Map workspace">
       <MapContainer
@@ -77,36 +85,40 @@ export function MapCanvas({
       >
         {baseVisible && (
           <TileLayer
-            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            key={basemapId}
+            url={basemap.url}
+            attribution={basemap.attribution}
+            eventHandlers={basemapEvents}
             noWrap
             zIndex={100}
           />
         )}
-        {elevationUrl && (
+        {elevationVisible && elevationBase && (
           <TileLayer
-            url={`${elevationUrl}/elevation/{z}/{x}/{y}.webp`}
+            url={`${elevationBase}/elevation/{z}/{x}/{y}.webp`}
             attribution='<a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md">Terrain data attribution</a>'
             noWrap
             zIndex={200}
           />
         )}
+        {showPlaceLabels && (
+          <TileLayer
+            url={imageryPlaceLabels.url}
+            attribution={imageryPlaceLabels.attribution}
+            noWrap
+            zIndex={300}
+          />
+        )}
         {bounds && (
           <Rectangle
             bounds={[[bounds.south, bounds.west], [bounds.north, bounds.east]]}
-            pathOptions={{ color: "#2a735e", weight: 2, fillOpacity: 0.16, interactive: false }}
+            pathOptions={{ color: selectionColor, weight: 2, fillOpacity: 0.16, interactive: false }}
           />
         )}
-        {selection?.type === "corner" && (
-          <CircleMarker
-            center={selection.point}
-            radius={5}
-            pathOptions={{ color: "#fff", weight: 2, fillColor: "#2a735e", fillOpacity: 1, interactive: false }}
-          />
-        )}
+        {mode === "area" && <AreaSelection color={selectionColor} onSelect={selectArea} />}
         <ZoomControl position="topright" />
         <ScaleControl position="bottomleft" imperial={false} />
-        <Interaction mode={mode} onSelect={onSelect} onCursor={onCursor} onZoom={onZoom} />
+        <Interaction />
       </MapContainer>
     </section>
   );

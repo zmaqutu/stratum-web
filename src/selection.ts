@@ -1,4 +1,4 @@
-import type { Bounds, Position } from "./geo/coordinates";
+import type { Bounds } from "./geo/coordinates";
 import type { Tile } from "./geo/tiles";
 
 export const selectionModes = [
@@ -10,5 +10,4 @@ export const selectionModes = [
 export type Mode = (typeof selectionModes)[number]["value"];
 export type Selection =
   | { type: "tile"; tile: Tile; bounds: Bounds }
-  | { type: "corner"; point: Position }
   | { type: "area"; bounds: Bounds };

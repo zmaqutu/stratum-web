@@ -1,15 +1,8 @@
+import { basemaps, isBasemapId } from "../basemap";
 import type { Bounds } from "../geo/coordinates";
+import { elevationBase } from "../mapConfig";
 import type { Mode, Selection } from "../selection";
-
-interface SidebarProps {
-  mode: Mode;
-  selection: Selection | null;
-  baseVisible: boolean;
-  elevationVisible: boolean;
-  elevationAvailable: boolean;
-  onBase: (visible: boolean) => void;
-  onElevation: (visible: boolean) => void;
-}
+import { useMapStore } from "../state/mapStore";
 
 function CoordinateBounds({ bounds }: { bounds: Bounds }) {
   return (
@@ -33,32 +26,38 @@ function Inspector({ mode, selection }: { mode: Mode; selection: Selection | nul
           <dt>Y</dt><dd>{tile.y}</dd>
         </dl>
         <CoordinateBounds bounds={bounds} />
+        {mode === "area" && <p className="hint">Drag across the map to select an area.</p>}
       </>
     );
   }
-  if (selection?.type === "area") return <CoordinateBounds bounds={selection.bounds} />;
-  if (selection?.type === "corner") {
+  if (selection?.type === "area") {
     return (
       <>
-        <dl className="readout">
-          <dt>First corner latitude</dt><dd>{selection.point.lat.toFixed(5)}°</dd>
-          <dt>First corner longitude</dt><dd>{selection.point.lng.toFixed(5)}°</dd>
-        </dl>
-        <p className="hint">Click the opposite corner to complete the area.</p>
+        <CoordinateBounds bounds={selection.bounds} />
+        {mode === "area" && <p className="hint">Drag again to replace the area.</p>}
       </>
     );
   }
   const hint = {
     pan: "Choose Inspect tile or Select area to make a selection.",
     tile: "Click the map to inspect the XYZ tile at the current zoom.",
-    area: "Click two opposite corners on the map.",
+    area: "Drag across the map to draw a rectangle. Release to select it.",
   };
   return <p className="hint">{hint[mode]}</p>;
 }
 
-export function Sidebar({
-  mode, selection, baseVisible, elevationVisible, elevationAvailable, onBase, onElevation,
-}: SidebarProps) {
+export function Sidebar() {
+  const mode = useMapStore((state) => state.mode);
+  const selection = useMapStore((state) => state.selection);
+  const baseVisible = useMapStore((state) => state.baseVisible);
+  const basemapId = useMapStore((state) => state.basemapId);
+  const placeLabels = useMapStore((state) => state.placeLabels);
+  const basemapError = useMapStore((state) => state.basemapError);
+  const elevationVisible = useMapStore((state) => state.elevationVisible);
+  const setBaseVisible = useMapStore((state) => state.setBaseVisible);
+  const setBasemap = useMapStore((state) => state.setBasemap);
+  const setPlaceLabels = useMapStore((state) => state.setPlaceLabels);
+  const setElevationVisible = useMapStore((state) => state.setElevationVisible);
   const selectionLabel = selection?.type === "tile"
     ? `Tile ${selection.tile.z}/${selection.tile.x}/${selection.tile.y}`
     : selection?.type === "area" ? "Rectangular area" : "None";
@@ -68,23 +67,54 @@ export function Sidebar({
       <section>
         <h2>Layers</h2>
         <ul className="layers">
-          <li>
+          <li className="basemap-entry">
             <label>
-              <input type="checkbox" checked={baseVisible} onChange={(event) => onBase(event.target.checked)} />
+              <input
+                type="checkbox"
+                checked={baseVisible}
+                onChange={(event) => setBaseVisible(event.currentTarget.checked)}
+              />
               Base Map
             </label>
+            <select
+              className="basemap-select"
+              aria-label="Basemap style"
+              value={basemapId}
+              onChange={(event) => {
+                const id = event.currentTarget.value;
+                if (isBasemapId(id)) setBasemap(id);
+              }}
+            >
+              {Object.entries(basemaps).map(([id, { label }]) => (
+                <option key={id} value={id}>{label}</option>
+              ))}
+            </select>
+            {basemapId === "imagery" && (
+              <label className="place-labels-toggle">
+                <input
+                  type="checkbox"
+                  checked={placeLabels}
+                  disabled={!baseVisible}
+                  onChange={(event) => setPlaceLabels(event.currentTarget.checked)}
+                />
+                Place labels
+              </label>
+            )}
+            {baseVisible && basemapError && (
+              <p className="hint basemap-error" role="status">Some tiles are unavailable. Try another basemap.</p>
+            )}
           </li>
           <li>
             <label>
               <input
                 type="checkbox"
                 checked={elevationVisible}
-                disabled={!elevationAvailable}
-                onChange={(event) => onElevation(event.target.checked)}
+                disabled={!elevationBase}
+                onChange={(event) => setElevationVisible(event.currentTarget.checked)}
               />
               Elevation
             </label>
-            {!elevationAvailable && <span className="layer-status">URL required</span>}
+            {!elevationBase && <span className="layer-status">URL required</span>}
           </li>
           <li><span className="planned-layer">Hillshade</span><span className="layer-status">Planned</span></li>
           <li><span className="planned-layer">Slope</span><span className="layer-status">Planned</span></li>

@@ -23,6 +23,10 @@ export function clampLatitude(lat: number): number {
   return Math.max(-MAX_MERCATOR_LATITUDE, Math.min(MAX_MERCATOR_LATITUDE, lat));
 }
 
+export function clampPositionToWorld({ lat, lng }: Position): Position {
+  return { lat: clampLatitude(lat), lng: Math.max(-180, Math.min(180, lng)) };
+}
+
 export function boundsFromCorners(first: Position, second: Position): Bounds {
   return {
     west: Math.min(first.lng, second.lng),
