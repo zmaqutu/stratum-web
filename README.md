@@ -39,7 +39,7 @@ World Imagery shows place names and boundaries by default. The **Place labels** 
 
 Stadia styles work on `localhost` and `127.0.0.1` within the provider's development limits. For hosted use, register the domain with Stadia Maps. Esri layers follow Esri's subscription and usage terms. [Stadia Maps authentication](https://docs.stadiamaps.com/authentication/) · [Esri content terms](https://www.esri.com/content/dam/arcgisonline/docs/tou_summary.pdf) · [OSM tile usage policy](https://operations.osmfoundation.org/policies/tiles/)
 
-For optional settings, copy `.env.example` to `.env.local` and restart Vite. `VITE_BASEMAP` can set a different initial style. Set `VITE_TILE_BASE_URL` to the base URL of an existing tile host, then enable **Elevation** in the sidebar. The app requests `{base}/elevation/{z}/{x}/{y}.webp`. Keep the layer off at zooms or locations where you have no output. The default elevation attribution points to AWS Terrain Tiles source credits. Update it if you use a different data source.
+For optional settings, copy `.env.example` to `.env.local` and restart Vite. `VITE_BASE_MAP` can set a different initial style. Set `VITE_TILE_BASE_URL` to the base URL of an existing tile host, then enable **Elevation** in the sidebar. The app requests `{base}/elevation/{z}/{x}/{y}.webp`. Keep the layer off at zooms or locations where you have no output. The default elevation attribution points to AWS Terrain Tiles source credits. Update it if you use a different data source.
 
 All `VITE_` variables are public build-time settings. `VITE_PROCESSING_API_URL` is reserved for future integration. The app can run with all settings unset.
 
@@ -47,6 +47,6 @@ All `VITE_` variables are public build-time settings. `VITE_PROCESSING_API_URL` 
 
 The workspace supports a single tile selection or a single axis-aligned geographic rectangle. Area selection uses ordered west/east bounds within one world and does not represent antimeridian-crossing rectangles. Hillshade, Slope and processing submission are planned. See the [architecture and proposed API](docs/architecture.md) and [roadmap](docs/roadmap.md).
 
-Stratum Web is open source under the [MIT License](LICENSE). Basemap services, elevation data and dependencies retain their own licenses and attribution requirements.
+Stratum Web is open source under the [MIT License](LICENSE). Base map services, elevation data and dependencies retain their own licenses and attribution requirements.
 
 The scaffolding and licensing commits use reconstructed author and committer timestamps of 10:00 and 10:03 SAST on 15 November 2025. The work took place later. Subsequent commits use their actual dates.

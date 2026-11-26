@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import type { BasemapId } from "../basemap.ts";
+import type { BaseMapId } from "../baseMap.ts";
 import type { Bounds, Position } from "../geo/coordinates.ts";
 import { positionToTile, tileBounds } from "../geo/tiles.ts";
-import { INITIAL_ZOOM, initialBasemapId } from "../mapConfig.ts";
+import { INITIAL_ZOOM, initialBaseMapId } from "../mapConfig.ts";
 import type { Mode, Selection } from "../selection.ts";
 
 interface MapState {
@@ -10,10 +10,10 @@ interface MapState {
   selection: Selection | null;
   cursor: Position | null;
   zoom: number;
-  basemapId: BasemapId;
+  baseMapId: BaseMapId;
   baseVisible: boolean;
   placeLabels: boolean;
-  basemapError: boolean;
+  baseMapError: boolean;
   elevationVisible: boolean;
   setMode: (mode: Mode) => void;
   inspectTile: (position: Position, zoom: number) => void;
@@ -21,10 +21,10 @@ interface MapState {
   clearSelection: () => void;
   setCursor: (cursor: Position | null) => void;
   setZoom: (zoom: number) => void;
-  setBasemap: (basemapId: BasemapId) => void;
+  setBaseMap: (baseMapId: BaseMapId) => void;
   setBaseVisible: (baseVisible: boolean) => void;
   setPlaceLabels: (placeLabels: boolean) => void;
-  setBasemapError: (basemapError: boolean) => void;
+  setBaseMapError: (baseMapError: boolean) => void;
   setElevationVisible: (elevationVisible: boolean) => void;
 }
 
@@ -33,10 +33,10 @@ export const useMapStore = create<MapState>()((set) => ({
   selection: null,
   cursor: null,
   zoom: INITIAL_ZOOM,
-  basemapId: initialBasemapId,
+  baseMapId: initialBaseMapId,
   baseVisible: true,
   placeLabels: true,
-  basemapError: false,
+  baseMapError: false,
   elevationVisible: false,
   setMode: (mode) => set({ mode }),
   inspectTile: (position, zoom) => {
@@ -47,9 +47,9 @@ export const useMapStore = create<MapState>()((set) => ({
   clearSelection: () => set({ selection: null }),
   setCursor: (cursor) => set({ cursor }),
   setZoom: (zoom) => set({ zoom }),
-  setBasemap: (basemapId) => set({ basemapId, baseVisible: true, basemapError: false }),
+  setBaseMap: (baseMapId) => set({ baseMapId, baseVisible: true, baseMapError: false }),
   setBaseVisible: (baseVisible) => set({ baseVisible }),
   setPlaceLabels: (placeLabels) => set({ placeLabels }),
-  setBasemapError: (basemapError) => set({ basemapError }),
+  setBaseMapError: (baseMapError) => set({ baseMapError }),
   setElevationVisible: (elevationVisible) => set({ elevationVisible }),
 }));

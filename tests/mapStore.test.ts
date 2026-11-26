@@ -6,20 +6,20 @@ beforeEach(() => {
   useMapStore.setState(useMapStore.getInitialState(), true);
 });
 
-test("changing basemap reveals it and preserves the selection and label preference", () => {
-  const { inspectTile, setBasemap, setBasemapError, setBaseVisible, setPlaceLabels } = useMapStore.getState();
+test("changing the base map reveals it and preserves the selection and label preference", () => {
+  const { inspectTile, setBaseMap, setBaseMapError, setBaseVisible, setPlaceLabels } = useMapStore.getState();
 
   inspectTile({ lat: -34.02, lng: 18.46 }, 11);
   setPlaceLabels(false);
   setBaseVisible(false);
-  setBasemapError(true);
+  setBaseMapError(true);
   const selection = useMapStore.getState().selection;
 
-  setBasemap("outdoors");
+  setBaseMap("outdoors");
   const state = useMapStore.getState();
-  assert.equal(state.basemapId, "outdoors");
+  assert.equal(state.baseMapId, "outdoors");
   assert.equal(state.baseVisible, true);
-  assert.equal(state.basemapError, false);
+  assert.equal(state.baseMapError, false);
   assert.equal(state.placeLabels, false);
   assert.equal(state.selection, selection);
 });

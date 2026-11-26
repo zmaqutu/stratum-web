@@ -3,7 +3,7 @@ import type { LatLngBoundsExpression } from "leaflet";
 import {
   MapContainer, Rectangle, ScaleControl, TileLayer, useMapEvents, ZoomControl,
 } from "react-leaflet";
-import { basemaps, imageryPlaceLabels } from "../basemap";
+import { baseMaps, imageryPlaceLabels } from "../baseMap";
 import { clampPositionToWorld, MAX_MERCATOR_LATITUDE } from "../geo/coordinates";
 import { elevationBase, INITIAL_ZOOM } from "../mapConfig";
 import { useMapStore } from "../state/mapStore";
@@ -61,17 +61,17 @@ export function MapCanvas() {
   const mode = useMapStore((state) => state.mode);
   const bounds = useMapStore((state) => state.selection?.bounds);
   const baseVisible = useMapStore((state) => state.baseVisible);
-  const basemapId = useMapStore((state) => state.basemapId);
-  const showPlaceLabels = useMapStore((state) => state.baseVisible && state.basemapId === "imagery" && state.placeLabels);
+  const baseMapId = useMapStore((state) => state.baseMapId);
+  const showPlaceLabels = useMapStore((state) => state.baseVisible && state.baseMapId === "imagery" && state.placeLabels);
   const elevationVisible = useMapStore((state) => state.elevationVisible);
-  const setBasemapError = useMapStore((state) => state.setBasemapError);
+  const setBaseMapError = useMapStore((state) => state.setBaseMapError);
   const selectArea = useMapStore((state) => state.selectArea);
-  const basemap = basemaps[basemapId];
-  const selectionColor = baseVisible && basemapId === "imagery" ? "#a6ddc2" : "#2a735e";
-  const basemapEvents = useMemo(() => ({
-    loading: () => setBasemapError(false),
-    tileerror: () => setBasemapError(true),
-  }), [setBasemapError]);
+  const baseMap = baseMaps[baseMapId];
+  const selectionColor = baseVisible && baseMapId === "imagery" ? "#a6ddc2" : "#2a735e";
+  const baseMapEvents = useMemo(() => ({
+    loading: () => setBaseMapError(false),
+    tileerror: () => setBaseMapError(true),
+  }), [setBaseMapError]);
   return (
     <section className={`map-region mode-${mode}`} aria-label="Map workspace">
       <MapContainer
@@ -85,10 +85,10 @@ export function MapCanvas() {
       >
         {baseVisible && (
           <TileLayer
-            key={basemapId}
-            url={basemap.url}
-            attribution={basemap.attribution}
-            eventHandlers={basemapEvents}
+            key={baseMapId}
+            url={baseMap.url}
+            attribution={baseMap.attribution}
+            eventHandlers={baseMapEvents}
             noWrap
             zIndex={100}
           />

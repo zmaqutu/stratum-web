@@ -4,7 +4,7 @@ const stadiaAttribution = '&copy; <a href="https://stadiamaps.com/attribution/">
 const openMapTilesAttribution = '&copy; <a href="https://openmaptiles.org/">OpenMapTiles</a>';
 const stamenAttribution = '&copy; <a href="https://stamen.com/">Stamen Design</a>';
 
-export const basemaps = {
+export const baseMaps = {
   imagery: {
     label: "Esri World Imagery",
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -44,8 +44,8 @@ export const imageryPlaceLabels = {
   attribution: `Place labels: Esri, HERE, Garmin, ${osmAttribution}, and the GIS User Community`,
 };
 
-export type BasemapId = keyof typeof basemaps;
+export type BaseMapId = keyof typeof baseMaps;
 
-export function isBasemapId(value: unknown): value is BasemapId {
-  return typeof value === "string" && Object.hasOwn(basemaps, value);
+export function isBaseMapId(value: unknown): value is BaseMapId {
+  return typeof value === "string" && Object.hasOwn(baseMaps, value);
 }

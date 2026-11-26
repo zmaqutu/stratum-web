@@ -1,4 +1,4 @@
-import { basemaps, isBasemapId } from "../basemap";
+import { baseMaps, isBaseMapId } from "../baseMap";
 import type { Bounds } from "../geo/coordinates";
 import { elevationBase } from "../mapConfig";
 import type { Mode, Selection } from "../selection";
@@ -50,12 +50,12 @@ export function Sidebar() {
   const mode = useMapStore((state) => state.mode);
   const selection = useMapStore((state) => state.selection);
   const baseVisible = useMapStore((state) => state.baseVisible);
-  const basemapId = useMapStore((state) => state.basemapId);
+  const baseMapId = useMapStore((state) => state.baseMapId);
   const placeLabels = useMapStore((state) => state.placeLabels);
-  const basemapError = useMapStore((state) => state.basemapError);
+  const baseMapError = useMapStore((state) => state.baseMapError);
   const elevationVisible = useMapStore((state) => state.elevationVisible);
   const setBaseVisible = useMapStore((state) => state.setBaseVisible);
-  const setBasemap = useMapStore((state) => state.setBasemap);
+  const setBaseMap = useMapStore((state) => state.setBaseMap);
   const setPlaceLabels = useMapStore((state) => state.setPlaceLabels);
   const setElevationVisible = useMapStore((state) => state.setElevationVisible);
   const selectionLabel = selection?.type === "tile"
@@ -67,7 +67,7 @@ export function Sidebar() {
       <section>
         <h2>Layers</h2>
         <ul className="layers">
-          <li className="basemap-entry">
+          <li className="base-map-entry">
             <label>
               <input
                 type="checkbox"
@@ -77,19 +77,19 @@ export function Sidebar() {
               Base Map
             </label>
             <select
-              className="basemap-select"
-              aria-label="Basemap style"
-              value={basemapId}
+              className="base-map-select"
+              aria-label="Base map style"
+              value={baseMapId}
               onChange={(event) => {
                 const id = event.currentTarget.value;
-                if (isBasemapId(id)) setBasemap(id);
+                if (isBaseMapId(id)) setBaseMap(id);
               }}
             >
-              {Object.entries(basemaps).map(([id, { label }]) => (
+              {Object.entries(baseMaps).map(([id, { label }]) => (
                 <option key={id} value={id}>{label}</option>
               ))}
             </select>
-            {basemapId === "imagery" && (
+            {baseMapId === "imagery" && (
               <label className="place-labels-toggle">
                 <input
                   type="checkbox"
@@ -100,8 +100,8 @@ export function Sidebar() {
                 Place labels
               </label>
             )}
-            {baseVisible && basemapError && (
-              <p className="hint basemap-error" role="status">Some tiles are unavailable. Try another basemap.</p>
+            {baseVisible && baseMapError && (
+              <p className="hint base-map-error" role="status">Some tiles are unavailable. Try another base map.</p>
             )}
           </li>
           <li>
